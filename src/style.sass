@@ -1,0 +1,57 @@
+@mixin proto-border
+    border: 1px solid black
+
+:root
+    margin: 0px
+    padding: 0px
+    background-color: #501ab4
+
+.app-container, .adjust-container, .timer-container, .inc-dec-adjust, .timer-contaienr
+    @include proto-border
+
+.app-container
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
+    background-color: #c2adeb
+
+.adjust-container
+    display: flex
+
+.inc-dec-adjust-container
+    margin-right: 10px
+    margin-left: 10px
+    display: flex
+    align-items: center
+    flex-direction: column
+    justify-content: center
+    max-height: 100%
+    .inc-dec 
+        @include proto-border
+        display: flex
+        align-items: center
+        justify-content: space-around
+        width: 150px
+
+.timer-container
+    @include proto-border
+    display: flex
+    align-items: center
+    justify-content: center
+    flex-direction: column
+    width: 250px
+    #time-left
+        @include proto-border
+        display: flex
+        align-items: center
+        justify-content: center
+        flex-direction: column
+        max-width: 100%
+        #buttons
+            display: flex
+            align-items: center
+            justify-content: center
+            flex-direction: row
+        
+        
