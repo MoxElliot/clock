@@ -1,32 +1,69 @@
 import React, { useState, useEffect } from 'react';
 
-
-
 const App = () => {
   
   const [sessionLength, setSessionLength] = useState(25);
-  const [timeLeft, setTimeLeft] = useState(sessionLength*60);
+  const [timeLeft, setTimeLeft] = useState(1500);
   const [breakLength, setBreakLength] = useState(5);
   const [timerInitialized, setTimerInitialized] = useState("Timer Off")
   
-  
+
   useEffect(() => {
     if (timerInitialized === "Timer On"){
+    console.log(timeLeft)  
     setTimeout(() => {
       setTimeLeft(timeLeft-1);
     }, 1000);}
   
-    return () => clearTimeout()
+    return () => clearTimeout(timeLeft)
      
-  }, [timeLeft, timerInitialized]);
+  });
+
+  const handleSessionInc = () => {
+    console.log(sessionLength)
+    if (sessionLength < 60) {
+     setSessionLength(prevCount => prevCount + 1)
+    } else (setSessionLength(prevCount => prevCount))
+  }
+
+  const handleBreakInc = () => {
+    console.log(breakLength)
+    if (breakLength < 60) {
+     setBreakLength(prevCount => prevCount + 1)
+    } else (setBreakLength(prevCount => prevCount))
+  }
+
+  const handleSessionDec = () => {
+    console.log(sessionLength)
+    if (sessionLength > 1) {
+     setSessionLength(prevCount => prevCount - 1)
+    } else (setSessionLength(prevCount => prevCount))
+  }
+
+  const handleBreakDec = () => {
+    console.log(breakLength)
+    if (breakLength > 1) {
+     setBreakLength(prevCount => prevCount - 1)
+    } else (setBreakLength(prevCount => prevCount))
+  }
 
   const TimerToggle = () => {
     if(timerInitialized === "Timer On"){
       setTimerInitialized("Timer Off")}
       else if (timerInitialized === "Timer Off")
-        {setTimerInitialized("Timer On")}
+        {setTimerInitialized("Timer On");
+        setTimeLeft(sessionLength*60)}
       }
 
+  const ResetToggle = () => {
+    
+    setBreakLength(5);
+    setSessionLength(25);
+    setTimeLeft(1500);
+    setTimerInitialized("Timer Off");
+    console.log(timeLeft)
+
+  }
   return (
     <div className="App">
         <div className="app-container">
@@ -35,17 +72,17 @@ const App = () => {
             <div className="inc-dec-adjust-container">
               <h2 id="break-label"> Break Length</h2>
               <div className="inc-dec">
-                <button id="break-increment" onClick={() => setBreakLength(breakLength + 1)}>+</button>
+                <button id="break-increment" onClick={handleBreakInc}>+</button>
                 <p id="break-length">{breakLength}</p>
-                <button id="break-decrement" onClick={() => setBreakLength(breakLength - 1)}>-</button>
+                <button id="break-decrement" onClick={handleBreakDec}>-</button>
               </div>
             </div>
             <div className="inc-dec-adjust-container">
               <h2 id="session-label"> Session Length</h2>
               <div className="inc-dec">
-                <button id="session-increment" onClick={() => setSessionLength(sessionLength + 1)}>+</button>
+                <button id="session-increment" onClick={handleSessionInc}>+</button>
                 <p id="session-length">{sessionLength}</p>
-                <button id="session-decrement" onClick={() => setSessionLength(sessionLength - 1)}>-</button>
+                <button id="session-decrement" onClick={handleSessionDec}>-</button>
               </div>
             </div>
           </div>
@@ -58,7 +95,7 @@ const App = () => {
                   Start/Stop
                 </button>
                 
-                <button id="reset">
+                <button id="reset" onClick={ResetToggle}>
                   Reset
                 </button>
               </div>
@@ -69,4 +106,6 @@ const App = () => {
   );
 }
 
+
+// timeLeft > 0 ? Math.floor(timeLeft / 60) + ":" +  Math.floor(timeLeft % 60): "Timer Done"
 export default App;
