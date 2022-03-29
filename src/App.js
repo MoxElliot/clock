@@ -9,18 +9,16 @@ const App = () => {
   const [breakLength, setBreakLength] = useState(5);
   const [timerInitialized, setTimerInitialized] = useState("Timer Off")
   
-
-  
   
   useEffect(() => {
-  
-    const timer = setTimeout(() => {
+    if (timerInitialized === "Timer On"){
+    setTimeout(() => {
       setTimeLeft(timeLeft-1);
-    }, 1000);
+    }, 1000);}
   
-    return () => clearTimeout(timer)
+    return () => clearTimeout()
      
-  }, [timerInitialized === "Timer On"]);
+  }, [timeLeft, timerInitialized]);
 
   const TimerToggle = () => {
     if(timerInitialized === "Timer On"){
