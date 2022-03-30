@@ -7,23 +7,25 @@ const App = () => {
   const [breakLength, setBreakLength] = useState(5);
   const [timerInitialized, setTimerInitialized] = useState("Timer Off")
   
-
+ 
   useEffect(() => {
+    let timer = null;
+
     if (timerInitialized === "Timer On" && timeLeft > 0){
-      setTimeout(() => {
+      timer = setTimeout(() => {
       setTimeLeft(prevTimeLeft => prevTimeLeft - 1);
     }, 1000);
     } else if (timeLeft === 0 && timerInitialized !== "Break Time") {
-      setTimerInitialized(prevInit => prevInit = "Break Time");
+      setTimerInitialized("Break Time");
       setTimeLeft(prevTimeLeft => prevTimeLeft = breakLength * 60);
     } else if (timerInitialized === "Break Time" && timeLeft > 0) {
       setTimeout(() => {
         setTimeLeft(prevTimeLeft => prevTimeLeft - 1);
       }, 1000);
     }
-    return () => clearTimeout(timeLeft)
+    return () => clearTimeout(timer)
      
-  });
+  }, [timerInitialized, timeLeft, breakLength ]);
 
   const handleSessionInc = () => {
     console.log(sessionLength)
@@ -53,12 +55,13 @@ const App = () => {
     } else (setBreakLength(prevCount => prevCount))
   }
 
+  
   const TimerToggle = () => {
-    if(timerInitialized === "Timer On"){
+    if(timerInitialized === "Timer On" || timerInitialized === "Break Time"){
       setTimerInitialized("Timer Off")}
       else if (timerInitialized === "Timer Off"){
         setTimerInitialized("Timer On");
-        setTimeLeft(prevTimeLeft => prevTimeLeft = sessionLength * 60)}
+        setTimeLeft(sessionLength * 60)}
       }
 
   const ResetToggle = () => {
@@ -67,7 +70,6 @@ const App = () => {
     setSessionLength(25);
     setTimeLeft(1500);
     setTimerInitialized("Timer Off");
-    console.log(timeLeft)
 
   }
   return (
@@ -95,7 +97,7 @@ const App = () => {
           <div className="timer-container">
             <div>
               <h2 id="timer-label">{timerInitialized}</h2>
-              <p id="time-left">{timeLeft > 0 ? Math.floor(timeLeft / 60) + ":" +  Math.floor(timeLeft % 60): "Timer Done"}</p>
+              <p id="time-left" onChange={setTimeLeft}>{timeLeft > 0 ? Math.floor(timeLeft / 60) + ":" +  Math.floor(timeLeft % 60): "Timer Done"}</p>
               <div id="buttons">
                 <button id="start_stop" onClick={TimerToggle}>
                   Start/Stop
