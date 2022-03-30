@@ -9,12 +9,18 @@ const App = () => {
   
 
   useEffect(() => {
-    if (timerInitialized === "Timer On"){
-    console.log(timeLeft)  
-    setTimeout(() => {
-      setTimeLeft(timeLeft-1);
-    }, 1000);}
-  
+    if (timerInitialized === "Timer On" && timeLeft > 0){
+      setTimeout(() => {
+      setTimeLeft(prevTimeLeft => prevTimeLeft - 1);
+    }, 1000);
+    } else if (timeLeft === 0 && timerInitialized !== "Break Time") {
+      setTimerInitialized(prevInit => prevInit = "Break Time");
+      setTimeLeft(prevTimeLeft => prevTimeLeft = breakLength * 60);
+    } else if (timerInitialized === "Break Time" && timeLeft > 0) {
+      setTimeout(() => {
+        setTimeLeft(prevTimeLeft => prevTimeLeft - 1);
+      }, 1000);
+    }
     return () => clearTimeout(timeLeft)
      
   });
@@ -50,9 +56,9 @@ const App = () => {
   const TimerToggle = () => {
     if(timerInitialized === "Timer On"){
       setTimerInitialized("Timer Off")}
-      else if (timerInitialized === "Timer Off")
-        {setTimerInitialized("Timer On");
-        setTimeLeft(sessionLength*60)}
+      else if (timerInitialized === "Timer Off"){
+        setTimerInitialized("Timer On");
+        setTimeLeft(prevTimeLeft => prevTimeLeft = sessionLength * 60)}
       }
 
   const ResetToggle = () => {
