@@ -1,49 +1,92 @@
 import React, { useState, useEffect } from 'react';
 
+
+const accurateInterval = function (fn, time) {
+  var cancel, nextAt, timeout, wrapper
+  nextAt = new Date().getTime() + time
+  timeout = null
+  wrapper = function () {
+    nextAt += time
+    timeout = setTimeout(wrapper, nextAt - new Date().getTime())
+    return fn()
+  }
+  cancel = function () {
+    return clearTimeout(timeout)
+  }
+  timeout = setTimeout(wrapper, nextAt - new Date().getTime())
+  return {
+    cancel: cancel
+  }
+}
+
 const App = () => {
-  
+  let sessionOverSound
   const [sessionLength, setSessionLength] = useState(25);
   const [timeLeft, setTimeLeft] = useState(1500);
   const [breakLength, setBreakLength] = useState(5);
-  const [timerInitialized, setTimerInitialized] = useState("Timer Off")
+  const [timerDisplay, setTimerDisplay] = useState("Timer Off")
+//  const [timerActive, setTimerActive] = useState(false)
+  const [timeInterval, setTimeInterval] = useState("")
+  const [isBreak, setIsBreak] = useState(false)
   
  
-  useEffect(() => {
-    let timer = null;
-   
-
-    if (timerInitialized === "Timer On" && timeLeft > 0){
-      timer = setTimeout(() => {
-      setTimeLeft(prevTimeLeft => prevTimeLeft - 1);
-    }, 1000);
-    } else if (timeLeft === 0 && timerInitialized !== "Break Time") {
-      clearTimeout(timer)
-      setTimerInitialized("Break Time");
-      setTimeLeft(prevTimeLeft => prevTimeLeft = breakLength * 60);
-    } else if (timerInitialized === "Break Time" && timeLeft > 0) {
-      setTimeout(() => {
-        setTimeLeft(prevTimeLeft => prevTimeLeft - 1);
-      }, 1000);
-    }
-    return () => clearTimeout(timer)
-     
-  }, [timerInitialized, timeLeft, breakLength ]);
-
- const secondsToTime = () => { 
-   let seconds = Math.floor( timeLeft % 60)
-   let minutes = Math.floor( timeLeft/60)
-      if (minutes < 10) {
-        minutes = "0" + minutes}
-
-    if (seconds < 10) {
-       seconds = "0" + seconds}
-      return minutes + ":" + seconds
-    }
+ useEffect(() => {
  
+    if (timeLeft < 1) {
+      sessionOverSound.play()
+      if (timeInterval) {
+        timeInterval.cancel()
+      }
+      if (isBreak) {
+        setTimeLeft(sessionLength * 60)
+      } else {
+        setTimeLeft(breakLength * 60)
+      }
+      startTime()
+      setIsBreak((prevIsBreak) => !prevIsBreak)
+      if (timerDisplay === "Timer On") {
+        setTimerDisplay("Break Time")
+      } else if (timerDisplay === "Break Time") {
+        setTimerDisplay("Timer Off")
+      }
+    }
+    if(timerDisplay === "Timer Off") {
+      if (timeInterval) {
+        timeInterval.cancel()
+      }
+    }
+  }, [timeLeft, breakLength, isBreak, sessionLength, timeInterval, timerDisplay, sessionOverSound])
+
+  const startTime = () => {
+    setTimeInterval(
+      accurateInterval(
+        () => {
+          setTimeLeft(prevTimeLeft => prevTimeLeft - 1)
+        }, 1000)
+    )
+  }
+
+
+  const setSeconds = () => { 
+    let seconds = Math.floor( timeLeft % 60)
+      if (seconds < 10) {
+        seconds = "0" + seconds}
+        return seconds
+      }
+  const setMinutes = () => { 
+    let minutes = Math.floor( timeLeft / 60)
+    if (minutes < 10) {
+        minutes = "0" + minutes}
+      return minutes
+    }
+
   const handleSessionInc = () => {
 
-    if (sessionLength < 60) {
+    if (sessionLength < 60 && timerDisplay === "Timer Off") {
      setSessionLength(prevCount => prevCount + 1)
+     setTimeLeft(prevCount => prevCount + 60)
+    } else if (sessionLength < 60 && timerDisplay !== "Timer Off") {
+      setSessionLength(prevCount => prevCount + 1)
     } else (setSessionLength(prevCount => prevCount))
   }
 
@@ -56,8 +99,11 @@ const App = () => {
 
   const handleSessionDec = () => {
 
-    if (sessionLength > 1) {
+     if (sessionLength > 1 && timerDisplay === "Timer Off") {
      setSessionLength(prevCount => prevCount - 1)
+     setTimeLeft(prevCount => prevCount - 60)
+    } else if (sessionLength < 60 && timerDisplay !== "Timer Off") {
+      setSessionLength(prevCount => prevCount - 1)
     } else (setSessionLength(prevCount => prevCount))
   }
 
@@ -70,11 +116,13 @@ const App = () => {
 
   
   const TimerToggle = () => {
-    if(timerInitialized === "Timer On" || timerInitialized === "Break Time"){
-      setTimerInitialized("Timer Off")}
-      else if (timerInitialized === "Timer Off"){
-        setTimerInitialized("Timer On");
-        setTimeLeft(sessionLength * 60)}
+    if(timerDisplay === "Timer Off"){
+      setTimerDisplay("Timer On")
+      startTime()
+      return
+  } else if (timerDisplay === "Timer On" || timerDisplay === "Break Time"){
+        setTimerDisplay("Timer Off");
+        }
       }
 
   const ResetToggle = () => {
@@ -82,8 +130,14 @@ const App = () => {
     setBreakLength(5);
     setSessionLength(25);
     setTimeLeft(1500);
-    setTimerInitialized("Timer Off");
-
+    setTimerDisplay("Timer Off");
+    setIsBreak(false)
+    setTimeInterval("")
+    sessionOverSound.pause()
+    sessionOverSound.currentTime = 0
+    if (timeInterval) {
+      timeInterval.cancel()
+    }
   }
   return (
     <div className="App">
@@ -109,8 +163,8 @@ const App = () => {
           </div>
           <div className="timer-container">
             <div>
-              <h2 id="timer-label">{timerInitialized}</h2>
-              <div id="time-left">{secondsToTime()}</div>
+              <h2 id="timer-label">{timerDisplay}</h2>
+              <div id="time-left">{setMinutes(timeLeft)}:{setSeconds(timeLeft)}</div>
               <div id="buttons">
                 <button id="start_stop" onClick={TimerToggle}>
                   Start/Stop
@@ -123,6 +177,14 @@ const App = () => {
             </div>
           </div>
         </div>
+        <audio
+          id="beep"
+          preload="auto"
+          ref={(audio) => {
+            sessionOverSound = audio;
+          }}
+          src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+        />
     </div>
   );
 }
