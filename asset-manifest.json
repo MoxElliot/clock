@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/MoxElliot/clock/static/css/main.8d278ee8.css",
+    "main.js": "/MoxElliot/clock/static/js/main.480ea07c.js",
+    "index.html": "/MoxElliot/clock/index.html",
+    "main.8d278ee8.css.map": "/MoxElliot/clock/static/css/main.8d278ee8.css.map",
+    "main.480ea07c.js.map": "/MoxElliot/clock/static/js/main.480ea07c.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.8d278ee8.css",
+    "static/js/main.480ea07c.js"
+  ]
+}
