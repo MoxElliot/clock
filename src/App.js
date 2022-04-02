@@ -20,7 +20,7 @@ const accurateInterval = function (fn, time) {
 }
 
 const App = () => {
-  let sessionOverSound
+  let playBeep
   const [sessionLength, setSessionLength] = useState(25);
   const [timeLeft, setTimeLeft] = useState(1500);
   const [breakLength, setBreakLength] = useState(5);
@@ -33,7 +33,7 @@ const App = () => {
  useEffect(() => {
  
     if (timeLeft < 1) {
-      sessionOverSound.play()
+      playBeep.play()
       if (timeInterval) {
         timeInterval.cancel()
       }
@@ -55,7 +55,7 @@ const App = () => {
         timeInterval.cancel()
       }
     }
-  }, [timeLeft, breakLength, isBreak, sessionLength, timeInterval, timerDisplay, sessionOverSound])
+  }, [timeLeft, breakLength, isBreak, sessionLength, timeInterval, timerDisplay, playBeep])
 
   const startTime = () => {
     setTimeInterval(
@@ -133,8 +133,8 @@ const App = () => {
     setTimerDisplay("Timer Off");
     setIsBreak(false)
     setTimeInterval("")
-    sessionOverSound.pause()
-    sessionOverSound.currentTime = 0
+    playBeep.pause()
+    playBeep.currentTime = 0
     if (timeInterval) {
       timeInterval.cancel()
     }
@@ -181,7 +181,7 @@ const App = () => {
           id="beep"
           preload="auto"
           ref={(audio) => {
-            sessionOverSound = audio;
+            playBeep = audio;
           }}
           src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
         />
