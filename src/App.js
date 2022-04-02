@@ -110,7 +110,7 @@ const App = () => {
 
   
   const TimerToggle = () => {
-    if(timerDisplay === "Timer Off" && timeLeft === sessionLength ){
+    if(timerDisplay === "Timer Off"){
       setTimerDisplay("Timer On")
       setTimeLeft(sessionLength * 60)
       startTime()
