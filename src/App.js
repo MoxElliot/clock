@@ -82,8 +82,11 @@ const App = () => {
 
   const handleSessionInc = () => {
 
-    if (sessionLength < 60) {
+    if (sessionLength < 60 && timerDisplay === "Timer Off") {
      setSessionLength(prevCount => prevCount + 1)
+     setTimeLeft(prevCount => prevCount + 60)
+    } else if (sessionLength < 60 && timerDisplay !== "Timer Off") {
+      setSessionLength(prevCount => prevCount + 1)
     } else (setSessionLength(prevCount => prevCount))
   }
 
@@ -96,8 +99,11 @@ const App = () => {
 
   const handleSessionDec = () => {
 
-    if (sessionLength > 1) {
+     if (sessionLength > 1 && timerDisplay === "Timer Off") {
      setSessionLength(prevCount => prevCount - 1)
+     setTimeLeft(prevCount => prevCount - 60)
+    } else if (sessionLength < 60 && timerDisplay !== "Timer Off") {
+      setSessionLength(prevCount => prevCount - 1)
     } else (setSessionLength(prevCount => prevCount))
   }
 
@@ -112,7 +118,6 @@ const App = () => {
   const TimerToggle = () => {
     if(timerDisplay === "Timer Off"){
       setTimerDisplay("Timer On")
-      setTimeLeft(sessionLength * 60)
       startTime()
       return
   } else if (timerDisplay === "Timer On" || timerDisplay === "Break Time"){
